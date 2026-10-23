@@ -11,7 +11,7 @@
   "Show": "[Show]",
   "Operational": "Operational",
   "No data available": "No data available, please make sure you have deployed your workers with latest config and check your worker status!",
-  "Overall": "Overall: {{percent}}%",
+  "Overall": "Last 7 days: {{percent}}%",
   "No Data": "No Data",
   "percent at date": "{{percent}}% at {{date}}",
   "Down for": "Down for {{duration}} (click for detail)",

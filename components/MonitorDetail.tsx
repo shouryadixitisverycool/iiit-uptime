@@ -56,10 +56,15 @@ export default function MonitorDetail({
       />
     )
 
-  let totalTime = Date.now() / 1000 - state.incident[monitor.id][0].start[0]
+  // Overall covers the last 7 days (or since monitoring started, if that's sooner)
+  const nowSec = Date.now() / 1000
+  const windowStart = Math.max(state.incident[monitor.id][0].start[0], nowSec - 7 * 86400)
+  let totalTime = nowSec - windowStart
   let downTime = 0
   for (let incident of state.incident[monitor.id]) {
-    downTime += (incident.end ?? Date.now() / 1000) - incident.start[0]
+    const start = Math.max(incident.start[0], windowStart)
+    const end = incident.end ?? nowSec
+    if (end > start) downTime += end - start
   }
 
   const uptimePercent = (((totalTime - downTime) / totalTime) * 100).toPrecision(4)
