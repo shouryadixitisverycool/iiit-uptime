@@ -4,6 +4,7 @@ import MonitorDetail from './MonitorDetail'
 import { pageConfig } from '@/uptime.config'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SpeedPoint } from './SpeedChart'
 
 function countDownCount(state: MonitorState, ids: string[]) {
   let downCount = 0
@@ -33,9 +34,11 @@ function getStatusTextColor(state: MonitorState, ids: string[]) {
 export default function MonitorList({
   monitors,
   state,
+  speed,
 }: {
   monitors: MonitorTarget[]
   state: MonitorState
+  speed: SpeedPoint[]
 }) {
   const { t } = useTranslation('common')
   const group = pageConfig.group
@@ -94,7 +97,7 @@ export default function MonitorList({
                 .map((monitor) => (
                   <div key={monitor.id}>
                     <Card.Section ml="xs" mr="xs">
-                      <MonitorDetail monitor={monitor} state={state} />
+                      <MonitorDetail monitor={monitor} state={state} speed={speed} />
                     </Card.Section>
                   </div>
                 ))}
@@ -108,7 +111,7 @@ export default function MonitorList({
     content = monitors.map((monitor) => (
       <div key={monitor.id}>
         <Card.Section ml="xs" mr="xs">
-          <MonitorDetail monitor={monitor} state={state} />
+          <MonitorDetail monitor={monitor} state={state} speed={speed} />
         </Card.Section>
       </div>
     ))

@@ -41,3 +41,4 @@ terraform.tfstate*
 
 # Kuma snapshot, fetched from the data branch at build time
 /state.json
+/speed.json

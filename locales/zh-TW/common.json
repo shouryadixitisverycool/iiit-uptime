@@ -33,5 +33,9 @@
   "All": "全部",
   "Select monitor": "選取站點",
   "Backwards": "← 上個月",
-  "Forward": "下個月 →"
+  "Forward": "下個月 →",
+  "Download": "Download",
+  "Upload": "Upload",
+  "Speed": "Speed (Mbps)",
+  "Latest speed": "Last speed test {{ago}}: {{down}} Mbps down, {{up}} Mbps up, {{latency}} ms latency"
 }

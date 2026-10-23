@@ -7,6 +7,8 @@ set -euo pipefail
 REPO=git@github.com:shouryadixitisverycool/iiit-uptime.git
 KEY=${DEPLOY_KEY:-$HOME/.ssh/iiit-uptime-deploy}
 IDS="1,2,3,4,5,6"
+# Push monitor fed by the D Block router's hourly speed test (msg = "down=.. up=.. latency=..")
+SPEED_ID=7
 
 here=$(cd "$(dirname "$0")" && pwd)
 work=$(mktemp -d)
@@ -22,11 +24,14 @@ q "SELECT monitor_id, UNIX_TIMESTAMP(time), status, REPLACE(REPLACE(IFNULL(msg,'
 q "SELECT monitor_id, UNIX_TIMESTAMP(time), status, IFNULL(ping,0)
    FROM heartbeat WHERE time > UTC_TIMESTAMP() - INTERVAL 12 HOUR AND monitor_id IN ($IDS)
    ORDER BY monitor_id, time" > "$work/latency.tsv"
+q "SELECT UNIX_TIMESTAMP(time), IFNULL(msg,'')
+   FROM heartbeat WHERE time > UTC_TIMESTAMP() - INTERVAL 7 DAY AND monitor_id = $SPEED_ID
+   ORDER BY time" > "$work/speed.tsv"
 
 mkdir "$work/repo"
 python3 -I "$here/kuma_to_state.py" "$work" "$work/repo/state.json"
 
-# data = main + one commit adding state.json, force-pushed each run. It has
+# data = main + one commit adding state.json and speed.json, force-pushed each run. It has
 # to contain main's workflow, since GitHub reads workflows from the pushed commit.
 cd "$work/repo"
 export GIT_SSH_COMMAND="ssh -i $KEY -o IdentitiesOnly=yes"
@@ -35,6 +40,6 @@ export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EM
 git init -q
 git fetch -q --depth=1 "$REPO" main
 git read-tree FETCH_HEAD
-git add -f state.json
+git add -f state.json speed.json
 commit=$(git commit-tree "$(git write-tree)" -p FETCH_HEAD -m "Kuma snapshot $(date -u +%FT%TZ)")
 git push -q -f "$REPO" "$commit:refs/heads/data"

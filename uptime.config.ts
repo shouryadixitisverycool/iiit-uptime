@@ -23,13 +23,14 @@ const workerConfig: WorkerConfig = {
     http('dining', 'Dining', 'https://dining.iiit.ac.in/', 'Mess registration and menus'),
     http('intranet', 'Intranet', 'https://intranet.iiit.ac.in/', 'Campus intranet'),
     http('matrix', 'Matrix', 'https://matrix.iiit.ac.in/', 'Matrix chat server'),
-    // Kuma push monitor: a machine in D Block sends heartbeats, so there is no URL to check
+    // Kuma push monitor: the D Block router sends heartbeats, so there is no URL to check.
+    // It also runs an hourly speed test, which MonitorDetail charts from speed.json.
     {
       id: 'dblock',
       name: 'D Block LAN',
       method: 'GET',
       target: '',
-      tooltip: 'Heartbeat from a machine on the D Block network',
+      tooltip: 'Heartbeat and hourly speed test from a router on the D Block network',
       hideLatencyChart: true,
     },
   ],

@@ -3,6 +3,7 @@ import { MonitorState, MonitorTarget } from '@/types/config'
 import { IconAlertCircle, IconAlertTriangle, IconCircleCheck } from '@tabler/icons-react'
 import DetailChart from './DetailChart'
 import DetailBar from './DetailBar'
+import SpeedChart, { SpeedPoint } from './SpeedChart'
 import { getColor } from '@/util/color'
 import { maintenances } from '@/uptime.config'
 import { useTranslation } from 'react-i18next'
@@ -10,9 +11,11 @@ import { useTranslation } from 'react-i18next'
 export default function MonitorDetail({
   monitor,
   state,
+  speed = [],
 }: {
   monitor: MonitorTarget
   state: MonitorState
+  speed?: SpeedPoint[]
 }) {
   const { t } = useTranslation('common')
 
@@ -104,6 +107,7 @@ export default function MonitorDetail({
 
       <DetailBar monitor={monitor} state={state} />
       {!monitor.hideLatencyChart && <DetailChart monitor={monitor} state={state} />}
+      {monitor.id === 'dblock' && <SpeedChart speed={speed} />}
     </>
   )
 }

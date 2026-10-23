@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Turn Kuma heartbeat exports (see export.sh) into UptimeFlare's compacted state JSON.
 
+Also writes speed.json next to OUTPUT_PATH: the D Block speed tests as
+[time, down Mbps, up Mbps, latency ms] rows.
+
 Usage: kuma_to_state.py TSV_DIR OUTPUT_PATH
 """
-import csv, json, struct, sys, time
+import csv, json, os, struct, sys, time
 from collections import defaultdict
 
 data_dir, out = sys.argv[1], sys.argv[2]
@@ -55,3 +58,14 @@ for mid, key in IDS.items():
 
 with open(out, "w") as f:
     json.dump(state, f, separators=(",", ":"))
+
+speed = []
+for t, msg in rows("speed.tsv"):
+    fields = dict(f.split("=", 1) for f in msg.split() if "=" in f)
+    try:
+        speed.append([int(t), float(fields["down"]), float(fields["up"]), float(fields.get("latency", 0))])
+    except (KeyError, ValueError):
+        continue
+
+with open(os.path.join(os.path.dirname(out), "speed.json"), "w") as f:
+    json.dump(speed, f, separators=(",", ":"))

@@ -1,6 +1,6 @@
 name: Deploy to GitHub Pages
 
-# data is main plus one commit adding state.json. The Kuma host force-pushes it
+# data is main plus one commit adding state.json and speed.json. The Kuma host force-pushes it
 # every 5 minutes, and each push rebuilds the site with the new snapshot.
 on:
   push:
@@ -35,7 +35,9 @@ jobs:
           key: next-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx') }}
           restore-keys: next-${{ hashFiles('package-lock.json') }}-
       # A push to main has no snapshot, so take the latest one from data
-      - run: test -f state.json || { git fetch --depth=1 origin data && git show FETCH_HEAD:state.json > state.json; }
+      - run: |
+          test -f state.json || { git fetch --depth=1 origin data && git show FETCH_HEAD:state.json > state.json; }
+          test -f speed.json || git show FETCH_HEAD:speed.json > speed.json 2>/dev/null || echo '[]' > speed.json
       - run: npm ci
       - run: npm run build
         env:

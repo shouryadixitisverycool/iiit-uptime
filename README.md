@@ -4,6 +4,8 @@ Status page for IIIT Hyderabad services, live at https://shouryadixitisverycool.
 
 This is a fork of [UptimeFlare](https://github.com/lyc8503/UptimeFlare) changed to run as a static site on GitHub Pages. UptimeFlare's Cloudflare Worker doesn't run the checks here. [Uptime Kuma](https://github.com/louislam/uptime-kuma) on a home server does, and every 5 minutes `kuma/export.sh` converts Kuma's database into UptimeFlare's state format and force-pushes it to the `data` branch. Each push to `data` or `main` rebuilds the site with `.github/workflows/pages.yml`.
 
+D Block LAN is a Kuma push monitor fed by a router in OBH D Block. Once an hour the router also runs a 10-second download and upload test against speed.cloudflare.com and pushes the result to a second push monitor, "D Block speed" (Kuma id 7). `export.sh` writes the last 7 days of those tests to `speed.json`, and the page charts them under D Block LAN. The router's SQM shaping caps the results at 35 Mbit down and 40 up.
+
 Each uptime bar covers about 2 hours of the last 7 days, and the percentage next to each service is for the last 7 days.
 
 If the home server goes offline, the page stays up and "Last updated" stops moving. Outages that hit every service at the same moment are usually the home server's connection, not IIIT.

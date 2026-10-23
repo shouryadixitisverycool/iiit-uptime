@@ -33,5 +33,9 @@
   "All": "Alle",
   "Select monitor": "Auswählen",
   "Backwards": "← Zurück",
-  "Forward": "Vorwärts →"
+  "Forward": "Vorwärts →",
+  "Download": "Download",
+  "Upload": "Upload",
+  "Speed": "Speed (Mbps)",
+  "Latest speed": "Last speed test {{ago}}: {{down}} Mbps down, {{up}} Mbps up, {{latency}} ms latency"
 }

@@ -11,15 +11,18 @@ import MonitorDetail from '@/components/MonitorDetail'
 import Footer from '@/components/Footer'
 import { useTranslation } from 'react-i18next'
 import { CompactedMonitorStateWrapper } from '@/worker/src/store'
+import { SpeedPoint } from '@/components/SpeedChart'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home({
   compactedStateStr,
   monitors,
+  speed,
 }: {
   compactedStateStr: string
   monitors: MonitorTarget[]
+  speed: SpeedPoint[]
   tooltip?: string
   statusPageLink?: string
 }) {
@@ -35,7 +38,7 @@ export default function Home({
     }
     return (
       <div style={{ maxWidth: '810px' }}>
-        <MonitorDetail monitor={monitor} state={state} />
+        <MonitorDetail monitor={monitor} state={state} speed={speed} />
       </div>
     )
   }
@@ -57,7 +60,7 @@ export default function Home({
         ) : (
           <div>
             <OverallStatus state={state} monitors={monitors} maintenances={maintenances} />
-            <MonitorList monitors={monitors} state={state} />
+            <MonitorList monitors={monitors} state={state} speed={speed} />
           </div>
         )}
 
@@ -70,8 +73,10 @@ export default function Home({
 export async function getStaticProps() {
   const { workerConfig } = await import('@/uptime.config')
   // state.json is the Kuma snapshot that CI pulls from the data branch before each build
-  const { readFileSync } = await import('fs')
+  const { existsSync, readFileSync } = await import('fs')
   const compactedStateStr = readFileSync('state.json', 'utf8')
+  // D Block speed tests, also from the data branch. Older snapshots don't have it.
+  const speed = existsSync('speed.json') ? JSON.parse(readFileSync('speed.json', 'utf8')) : []
 
   // Only present these values to client
   const monitors = workerConfig.monitors.map((monitor) => {
@@ -87,5 +92,5 @@ export async function getStaticProps() {
     }
   })
 
-  return { props: { compactedStateStr, monitors } }
+  return { props: { compactedStateStr, monitors, speed } }
 }
