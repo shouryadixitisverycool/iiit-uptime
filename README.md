@@ -1,3 +1,15 @@
+# IIIT Uptime
+
+Status page for IIIT Hyderabad services, live at https://shouryadixitisverycool.github.io/iiit-uptime/.
+
+This is a fork of [UptimeFlare](https://github.com/lyc8503/UptimeFlare) changed to run as a static site on GitHub Pages. UptimeFlare's Cloudflare Worker doesn't run the checks here. [Uptime Kuma](https://github.com/louislam/uptime-kuma) on a home server does, and every 5 minutes `kuma/export.sh` converts Kuma's database into UptimeFlare's state format and force-pushes it to the `data` branch. Each push to `data` or `main` rebuilds the site with `.github/workflows/pages.yml`.
+
+If the home server goes offline, the page stays up and "Last updated" stops moving. Outages that hit every service at the same moment are usually the home server's connection, not IIIT.
+
+The original UptimeFlare README follows.
+
+---
+
 <div align="right">
   <a title="English" href="README.md"><img src="https://img.shields.io/badge/-English-A31F34?style=for-the-badge" alt="English" /></a>
   <a title="简体中文" href="README_zh-CN.md"><img src="https://img.shields.io/badge/-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-545759?style=for-the-badge" alt="简体中文"></a>

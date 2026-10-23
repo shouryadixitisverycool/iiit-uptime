@@ -1,0 +1,48 @@
+name: Deploy to GitHub Pages
+
+# main holds the site, data holds state.json. The Kuma host force-pushes data
+# every 5 minutes, and each push rebuilds the site with the new snapshot.
+on:
+  push:
+    branches: [main, data]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# A newer snapshot makes any running build pointless
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: next-${{ hashFiles('package-lock.json') }}-${{ hashFiles('**/*.ts', '**/*.tsx') }}
+          restore-keys: next-${{ hashFiles('package-lock.json') }}-
+      - run: git fetch --depth=1 origin data && git show FETCH_HEAD:state.json > state.json
+      - run: npm ci
+      - run: npm run build
+        env:
+          BASE_PATH: /${{ github.event.repository.name }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+      - id: deployment
+        uses: actions/deploy-pages@v4

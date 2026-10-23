@@ -4,6 +4,8 @@ import { pageConfig } from '@/uptime.config'
 import { PageConfigLink } from '@/types/config'
 import { useTranslation } from 'react-i18next'
 
+const base = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
+
 export default function Header({ style }: { style?: React.CSSProperties }) {
   const { t } = useTranslation('common')
   const linkToElement = (link: PageConfigLink, i: number) => {
@@ -20,18 +22,18 @@ export default function Header({ style }: { style?: React.CSSProperties }) {
     )
   }
 
-  const links = [{ label: t('Incidents'), link: '/incidents' }, ...(pageConfig.links || [])]
+  const links = [{ label: t('Incidents'), link: `${base}/incidents` }, ...(pageConfig.links || [])]
 
   return (
     <header className={classes.header} style={style}>
       <Container size="md" className={classes.inner}>
         <div>
           <a
-            href={location.pathname == '/' ? 'https://github.com/lyc8503/UptimeFlare' : '/'}
-            target={location.pathname == '/' ? '_blank' : undefined}
+            href={location.pathname.replace(/\/$/, '') == base ? 'https://github.com/lyc8503/UptimeFlare' : `${base}/`}
+            target={location.pathname.replace(/\/$/, '') == base ? '_blank' : undefined}
           >
             <Image
-              src={pageConfig.logo ?? '/logo.svg'}
+              src={pageConfig.logo ?? `${base}/logo.svg`}
               h={56}
               w={{ base: 140, sm: 190 }}
               fit="contain"

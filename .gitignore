@@ -38,3 +38,6 @@ next-env.d.ts
 terraform.tfstate*
 
 /.wrangler
+
+# Kuma snapshot, fetched from the data branch at build time
+/state.json

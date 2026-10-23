@@ -53,7 +53,7 @@ export default function OverallStatus({
   useEffect(() => {
     const interval = setInterval(() => {
       if (!isWindowVisible) return
-      if (currentTime - state.lastUpdate > 300 && currentTime - openTime > 30) {
+      if (currentTime - state.lastUpdate > 300 && currentTime - openTime > 300) {
         window.location.reload()
       }
       setCurrentTime(Math.round(Date.now() / 1000))

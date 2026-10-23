@@ -11,7 +11,6 @@ import MaintenanceAlert from '@/components/MaintenanceAlert'
 import NoIncidentsAlert from '@/components/NoIncidents'
 import { useTranslation } from 'react-i18next'
 
-export const runtime = 'experimental-edge'
 const inter = Inter({ subsets: ['latin'] })
 
 function getSelectedMonth() {
@@ -84,7 +83,7 @@ export default function IncidentsPage({ monitors }: { monitors: MonitorTarget[] 
     <>
       <Head>
         <title>{pageConfig.title}</title>
-        <link rel="icon" href={pageConfig.favicon ?? '/favicon.png'} />
+        <link rel="icon" href={pageConfig.favicon ?? `${process.env.NEXT_PUBLIC_BASE_PATH}/favicon.png`} />
       </Head>
 
       <main className={inter.className}>
@@ -133,7 +132,7 @@ export default function IncidentsPage({ monitors }: { monitors: MonitorTarget[] 
   )
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const { workerConfig } = await import('@/uptime.config')
   // Only present these values to client
   const monitors: MonitorTarget[] = workerConfig.monitors.map((monitor) => ({

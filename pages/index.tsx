@@ -10,9 +10,8 @@ import { Center, Text } from '@mantine/core'
 import MonitorDetail from '@/components/MonitorDetail'
 import Footer from '@/components/Footer'
 import { useTranslation } from 'react-i18next'
-import { CompactedMonitorStateWrapper, getFromStore } from '@/worker/src/store'
+import { CompactedMonitorStateWrapper } from '@/worker/src/store'
 
-export const runtime = 'experimental-edge'
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home({
@@ -45,7 +44,7 @@ export default function Home({
     <>
       <Head>
         <title>{pageConfig.title}</title>
-        <link rel="icon" href={pageConfig.favicon ?? '/favicon.png'} />
+        <link rel="icon" href={pageConfig.favicon ?? `${process.env.NEXT_PUBLIC_BASE_PATH}/favicon.png`} />
       </Head>
 
       <main className={inter.className}>
@@ -68,10 +67,11 @@ export default function Home({
   )
 }
 
-export async function getServerSideProps() {
+export async function getStaticProps() {
   const { workerConfig } = await import('@/uptime.config')
-  // Read state as string from storage, to avoid hitting server-side cpu time limit
-  const compactedStateStr = await getFromStore(process.env as any, 'state')
+  // state.json is the Kuma snapshot that CI pulls from the data branch before each build
+  const { readFileSync } = await import('fs')
+  const compactedStateStr = readFileSync('state.json', 'utf8')
 
   // Only present these values to client
   const monitors = workerConfig.monitors.map((monitor) => {
@@ -79,11 +79,11 @@ export async function getServerSideProps() {
       id: monitor.id,
       name: monitor.name,
       // @ts-ignore
-      tooltip: monitor?.tooltip,
+      tooltip: monitor?.tooltip ?? null,
       // @ts-ignore
-      statusPageLink: monitor?.statusPageLink,
+      statusPageLink: monitor?.statusPageLink ?? null,
       // @ts-ignore
-      hideLatencyChart: monitor?.hideLatencyChart,
+      hideLatencyChart: monitor?.hideLatencyChart ?? null,
     }
   })
 
