@@ -26,10 +26,15 @@ q "SELECT monitor_id, UNIX_TIMESTAMP(time), status, IFNULL(ping,0)
 mkdir "$work/repo"
 python3 -I "$here/kuma_to_state.py" "$work" "$work/repo/state.json"
 
-# One orphan commit per run, force-pushed, so the branch never grows history
+# data = main + one commit adding state.json, force-pushed each run. It has
+# to contain main's workflow, since GitHub reads workflows from the pushed commit.
 cd "$work/repo"
+export GIT_SSH_COMMAND="ssh -i $KEY -o IdentitiesOnly=yes"
+export GIT_AUTHOR_NAME="IIIT Uptime" GIT_AUTHOR_EMAIL="iiit-uptime@users.noreply.github.com"
+export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME" GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
 git init -q
-git add state.json
-git -c user.name="IIIT Uptime" -c user.email="iiit-uptime@users.noreply.github.com" \
-  commit -q -m "Kuma snapshot $(date -u +%FT%TZ)"
-GIT_SSH_COMMAND="ssh -i $KEY -o IdentitiesOnly=yes" git push -q -f "$REPO" HEAD:data
+git fetch -q --depth=1 "$REPO" main
+git read-tree FETCH_HEAD
+git add -f state.json
+commit=$(git commit-tree "$(git write-tree)" -p FETCH_HEAD -m "Kuma snapshot $(date -u +%FT%TZ)")
+git push -q -f "$REPO" "$commit:refs/heads/data"
